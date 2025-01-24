@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Valentine's Day</title>
+    <style>
+        body {
+            background-color: #ffb5c0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 30px;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5em;
+            text-align: center;
+            margin: 0 20px 30px 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .heart-image {
+            width: 180px;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.6));
+        }
+
+        .buttons-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin: 0 auto;
+        }
+
+        .valentine-button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.4s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50%;
+            box-sizing: border-box;
+            width: 120px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        #yesBtn {
+            background-color: #4CAF50;
+            color: white;
+            left: 50%;
+            transform: translate(-130%, -50%);
+            z-index: 1;
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            left: 50%;
+            transform: translate(30%, -50%);
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        #yesBtn:hover {
+            transform: translate(-130%, -50%) scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <h1>Will you be my Valentine?</h1>
+    <img src="https://www.freeiconspng.com/uploads/heart-png-15.png" 
+         class="heart-image" 
+         alt="Heart Image">
+    
+    <div class="buttons-container">
+        <a href="letter.html" id="yesBtn" class="valentine-button">Yes</a>
+        <button id="noBtn" class="valentine-button">No</button>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const container = document.querySelector('.buttons-container');
+
+        // Movement parameters
+        const MIN_DISTANCE = 150;
+        const SCREEN_PADDING = 20;
+
+        function getRandomPosition() {
+            const buttonRect = noBtn.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            const maxX = containerRect.width - buttonRect.width - SCREEN_PADDING;
+            const maxY = containerRect.height - buttonRect.height - SCREEN_PADDING;
+            
+            let newX, newY;
+            do {
+                newX = Math.random() * maxX;
+                newY = Math.random() * maxY;
+            } while (
+                Math.abs(newX - parseFloat(noBtn.style.left || 0)) < MIN_DISTANCE &&
+                Math.abs(newY - parseFloat(noBtn.style.top || 0)) < MIN_DISTANCE
+            );
+
+            return { x: newX, y: newY };
+        }
+
+        function moveButton() {
+            const newPos = getRandomPosition();
+            noBtn.style.left = `${newPos.x}px`;
+            noBtn.style.top = `${newPos.y}px`;
+        }
+
+        function resetPositions() {
+            noBtn.style.left = '50%';
+            noBtn.style.top = '50%';
+            noBtn.style.transform = 'translate(30%, -50%)';
+        }
+
+        // Event Listeners
+        window.addEventListener('load', resetPositions);
+        noBtn.addEventListener('mouseenter', moveButton);
+        noBtn.addEventListener('touchstart', moveButton);
+        noBtn.addEventListener('click', moveButton);
+        window.addEventListener('resize', resetPositions);
+
+        // Prevent context menu
+        window.addEventListener('contextmenu', (e) => e.preventDefault());
+    </script>
+</body>
+</html>

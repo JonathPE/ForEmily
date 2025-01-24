@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Letter for Emily</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5e6e8;
+            font-family: 'Crimson Text', serif;
+            touch-action: none;
+            position: relative;
+        }
+
+        .envelope-container {
+            position: relative;
+            width: 280px;
+            height: 200px;
+            overflow: visible;
+            z-index: 1;
+        }
+
+        .secret-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #eb7a78;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .secret-button.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .secret-button:hover {
+            background: #d74a49;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #eb7a78;
+            z-index: 1;
+            clip-path: polygon(0 0, 100% 0, 50% 40%, 0 0);
+        }
+
+        .envelope-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #d74a49;
+            clip-path: polygon(
+                0 0,
+                100% 0,
+                100% 100%,
+                0 100%,
+                0 0,
+                50% 40%,
+                100% 0
+            );
+            z-index: 3;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #c0392b;
+            clip-path: polygon(0 0, 100% 0, 50% 40%);
+            transform-origin: top center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 4;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .letter-preview {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            width: 80%;
+            height: 35%;
+            background: #fff9f0;
+            transform: translateX(-50%) rotate(-2deg);
+            border-radius: 2px;
+            z-index: 2;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            cursor: grab;
+            overflow: hidden;
+        }
+
+        .letter-preview::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #eb7a78;
+            opacity: 0.5;
+        }
+
+        .letter-preview::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .letter-full {
+            position: fixed;
+            width: 80%;
+            max-width: 340px;
+            padding: 2rem;
+            background: #fff9f0;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transform: translate(-50%, 100%) scale(0.8);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 5;
+            top: 50%;
+            left: 50%;
+            cursor: default;
+            border: 1px solid #f0e0d8;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .heart {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 2;
+            filter: drop-shadow(0 0 2px rgba(255, 20, 147, 0.5));
+            transition: opacity 0.3s ease;
+        }
+
+        .heart.active {
+            opacity: 0.8;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 20px;
+            background: #ff1493;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .heart::before {
+            left: 12px;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(0.8);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-30px, -200px) scale(2);
+                opacity: 0;
+            }
+        }
+
+        .heart {
+            animation: float 3s linear infinite;
+        }
+
+        .letter-content {
+            line-height: 1.7;
+            color: #3a3a3a;
+            font-size: 1.1rem;
+            position: relative;
+            text-align: justify;
+            hyphens: auto;
+            word-wrap: break-word;
+        }
+
+        .letter-content p {
+            margin: 1rem 0;
+        }
+
+        .letter-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: #c0392b;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .letter-header::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: #eb7a78;
+        }
+
+        .signature {
+            font-family: 'Playfair Display', cursive;
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            text-align: right;
+            color: #c0392b;
+        }
+
+        .envelope-flap.open {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-flap.open ~ .letter-preview {
+            opacity: 1;
+        }
+
+        .letter-full.open {
+            animation: letterEntrance 0.5s ease-out forwards;
+            pointer-events: auto;
+        }
+
+        @keyframes letterEntrance {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .letter-full::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .letter-full::-webkit-scrollbar-track {
+            background: #fff9f0;
+            border-radius: 4px;
+        }
+
+        .letter-full::-webkit-scrollbar-thumb {
+            background: #eb7a78;
+            border-radius: 4px;
+            border: 2px solid #fff9f0;
+        }
+
+        .letter-full::-webkit-scrollbar-thumb:hover {
+            background: #d74a49;
+        }
+
+        @media (max-width: 600px) {
+            .envelope-container {
+                width: 240px;
+                height: 180px;
+            }
+            
+            .letter-full {
+                width: 90%;
+                max-width: 300px;
+                padding: 1.5rem;
+                max-height: 65vh;
+            }
+
+            .letter-content {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            .letter-header {
+                font-size: 1.4rem;
+            }
+
+            .signature {
+                font-size: 1.1rem;
+            }
+
+            .secret-button {
+                bottom: 10px;
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope-container">
+        <div class="envelope-back"></div>
+        <div class="envelope-body"></div>
+        <div class="envelope-flap" onclick="toggleFlap()"></div>
+        <div class="letter-preview"></div>
+        <div class="letter-full" id="fullLetter">
+            <div class="letter-content">
+                <div class="letter-header">Dear My Future Wife Emily</div>
+                
+                <p>
+
+                </p>
+                
+                <p>     I am no writer, however I want to be romantic so for you I will try. 21st June 2024, this is the night I fell in love, the one night that I know will be etched into my heart forever. I remember how you looked so effortlessly stunning in your dress, how we danced all night long, how we sung love songs to one another the entire car ride, how I couldn't take my eyes off of your eyes, how your smile struck me with emotions I had never felt before. Not once have I resisted kissing someone even remotely as much as I did that night. I was in love.</p>
+
+                <p>Since then, not a day goes by where my love for you stands still, it is ever increasing, I love you more with each day that goes by and I don't believe that train will ever stop. Regardless of any ups and down you are still the only person I will ever love. You are mine and I am yours, I never want this fact to change.</p>
+
+                <p>As we move through our relationship, I can't help but dream about what our future holds. After university, I imagine us building a life together up in Edinburgh, I never really cared much about where I would live come university ending. But now I realize myself wishing for it to be Edinburgh. Solely because I know that there I will be with you, and I do not care where my home is, as long as I share it with you. You make me want to succeed in life so I can spoil you rotten and let you feel the happiness you oh so deserve.</p>
+
+                <p>Moving even further into our future I see you walking down the aisle, breathtaking as always, while I stand there overwhelmed with gratitude, knowing I get to spend forever with you. I want to marry you, to commit to you in every way possible. I want to wake up beside you every day, share my life with you, and build a love so strong that it's the only thing I care about in the world.</p>
+
+                <p>I can already imagine the moments we’ll share. Decorating our first home, possibly having children, and finally growing old together. I know life won’t always be easy, but I also know that with you by my side, every challenge will feel worth it in the end.</p>
+
+                <p>Emily Grace-Lucy Howard (Edwards in the future), you are my everything, my love, my dream come true. I don’t know what I did to deserve you, and I know sometimes you don't believe me when I say I do, but I promise to love you unconditionally for the rest of my days. You are my forever, my always, and my everything.</p>
+
+                <div class="signature">With all my love,<br>Your future husband<br>Jonathan Peter Edwards</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="secret-button" onclick="window.location.href='timberclicker.html'">Since you keep saying you're bored</button>
+
+    <script>
+        let isOpen = false;
+        let isDragging = false;
+        let dragCompleted = false;
+        let ignoreNextClick = false;
+        let heartInterval;
+        const flap = document.querySelector('.envelope-flap');
+        const preview = document.querySelector('.letter-preview');
+        const fullLetter = document.getElementById('fullLetter');
+        const envelope = document.querySelector('.envelope-container');
+        const secretButton = document.querySelector('.secret-button');
+        const DRAG_THRESHOLD = 60;
+
+        function createHeart() {
+            if (!isOpen) return;
+            
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            
+            const envelopeRect = envelope.getBoundingClientRect();
+            const x = (Math.random() * envelopeRect.width * 1.2) - 20;
+            const y = envelopeRect.height * 0.3;
+            
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            heart.style.animationDuration = `${2 + Math.random() * 2}s`;
+            heart.style.animationDelay = `${Math.random() * 0.5}s`;
+            
+            envelope.appendChild(heart);
+            setTimeout(() => heart.classList.add('active'), 10);
+            
+            setTimeout(() => heart.remove(), 3000);
+        }
+
+        function toggleFlap() {
+            if (dragCompleted) return;
+            isOpen = !isOpen;
+            
+            if (isOpen) {
+                heartInterval = setInterval(createHeart, 300);
+            } else {
+                clearInterval(heartInterval);
+                document.querySelectorAll('.heart').forEach(heart => heart.remove());
+                secretButton.classList.remove('visible');
+            }
+            
+            flap.classList.toggle('open');
+            preview.style.opacity = isOpen ? 1 : 0;
+            
+            if (!isOpen) {
+                fullLetter.classList.remove('open');
+                preview.style.top = '15%';
+                preview.style.transform = 'translateX(-50%) rotate(-2deg)';
+            }
+        }
+
+        function handleMove(clientY) {
+            if (!isDragging || !isOpen || dragCompleted) return;
+            
+            const envelopeTop = envelope.getBoundingClientRect().top;
+            const dragDistance = envelopeTop - clientY;
+            const progress = Math.min(dragDistance / DRAG_THRESHOLD, 1);
+            
+            preview.style.top = `${15 - (progress * 10)}%`;
+            preview.style.transform = `translateX(-50%) rotate(-${2 + (progress * 4)}deg)`;
+            preview.style.opacity = 1 - (progress * 0.8);
+            
+            if (dragDistance > DRAG_THRESHOLD) {
+                completeDrag();
+            }
+        }
+
+        function completeDrag() {
+            isDragging = false;
+            dragCompleted = true;
+            fullLetter.classList.add('open');
+            preview.style.opacity = 0;
+            ignoreNextClick = true;
+            secretButton.classList.add('visible');
+            setTimeout(() => ignoreNextClick = false, 50);
+        }
+
+        function resetPreview() {
+            preview.style.transition = 'all 0.3s ease';
+            preview.style.top = '15%';
+            preview.style.transform = 'translateX(-50%) rotate(-2deg)';
+            preview.style.opacity = 1;
+            setTimeout(() => preview.style.transition = '', 300);
+        }
+
+        preview.addEventListener('touchstart', e => {
+            if (dragCompleted) return;
+            isDragging = true;
+        });
+
+        preview.addEventListener('touchmove', e => {
+            handleMove(e.touches[0].clientY);
+        });
+
+        preview.addEventListener('touchend', () => {
+            if (!dragCompleted) {
+                isDragging = false;
+                resetPreview();
+            }
+        });
+
+        preview.addEventListener('mousedown', e => {
+            if (dragCompleted) return;
+            isDragging = true;
+        });
+
+        document.addEventListener('mousemove', e => {
+            handleMove(e.clientY);
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging && !dragCompleted) {
+                isDragging = false;
+                resetPreview();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (ignoreNextClick) return;
+            if (!e.target.closest('.envelope-container') && 
+                !e.target.closest('.letter-full')) {
+                flap.classList.remove('open');
+                fullLetter.classList.remove('open');
+                preview.style.opacity = 0;
+                isOpen = false;
+                dragCompleted = false;
+                clearInterval(heartInterval);
+                secretButton.classList.remove('visible');
+                document.querySelectorAll('.heart').forEach(heart => heart.remove());
+            }
+        });
+    </script>
+</body>
+</html>

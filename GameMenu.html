@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games Menu</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #004d81, #3498db);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .title {
+            color: #fff;
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .game-button {
+            background: #ffffff;
+            border: none;
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 250px;
+        }
+
+        .game-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-button img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .button-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .game-button {
+                width: 90%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">Games Menu</h1>
+    
+    <div class="buttons-container">
+        <a href="TimberClicker.html" class="game-button">
+            <img src="timber.jpg" alt="Timber Clicker">
+            <span class="button-text">Timber Clicker</span>
+        </a>
+
+        <a href="FlappyDelilah.html" class="game-button">
+            <img src="DelilahFlapImage.png" alt="Flappy Delilah">
+            <span class="button-text">Flappy Delilah</span>
+        </a>
+    </div>
+
+    <script>
+        // Add click animation to buttons
+        document.querySelectorAll('.game-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Add temporary click effect
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -16,7 +16,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #2c3e50;
+            background: #ff79cb;
             -webkit-tap-highlight-color: transparent;
         }
         #game-container {
@@ -43,6 +43,7 @@
             text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
             z-index: 1;
             font-family: Arial, sans-serif;
+            display: none;
         }
         #high-score {
             position: absolute;
@@ -54,6 +55,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             z-index: 1;
             font-family: Arial, sans-serif;
+            display: none;
         }
         #game-over {
             position: absolute;
@@ -67,15 +69,67 @@
             display: none;
             z-index: 2;
         }
+        #intro-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 4ec0ca;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        #title {
+            color: #ffeb3b;
+            font-size: 12vw;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            margin-bottom: 10%;
+            animation: float 2s ease-in-out infinite;
+            text-align: center;
+        }
+        #start-button {
+            padding: 4vw 8vw;
+            font-size: 6vw;
+            background: #382ecc;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background 0.2s;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        #start-button:active {
+            transform: scale(0.95);
+            background: #27ae60;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
         @media (min-width: 600px) {
             #score { font-size: 36px; }
             #high-score { font-size: 24px; }
             #game-over { font-size: 48px; }
+            #title { font-size: 72px; }
+            #start-button { font-size: 36px; padding: 20px 40px; }
         }
     </style>
 </head>
 <body>
     <div id="game-container">
+        <div id="intro-screen">
+            <div id="title">Flappy Delilah</div>
+            <button id="start-button">Start Game</button>
+        </div>
         <div id="high-score">High Score: 0</div>
         <div id="score">0</div>
         <div id="game-over">
@@ -95,6 +149,8 @@ const highScoreElement = document.getElementById('high-score');
 const gameOverElement = document.getElementById('game-over');
 const finalScoreElement = document.getElementById('final-score');
 const finalHighscoreElement = document.getElementById('final-highscore');
+const introScreen = document.getElementById('intro-screen');
+const startButton = document.getElementById('start-button');
 
 // Responsive setup
 let aspectRatio = 2/3;
@@ -137,7 +193,8 @@ let buildings = [];
 let clouds = [];
 let score = 0;
 let highScore = localStorage.getItem('flappyHighScore') || 0;
-let gameRunning = true;
+let gameRunning = false;
+let introActive = true;
 
 // Dynamic parameters (set in resizeCanvas)
 let pillarWidth, pillarGap, pillarSpacing, buildingWidth, buildingSpacing;
@@ -153,7 +210,16 @@ highScoreElement.textContent = `High Score: ${highScore}`;
 
 // Square placeholder image with border
 const birdImage = new Image();
-birdImage.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+PHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHJ4PSIxMCIgZmlsbD0icmVkIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjMiLz48L3N2Zz4=';
+birdImage.src = 'DelilahFlapImage.png';
+
+function startGame() {
+    introScreen.style.display = 'none';
+    scoreElement.style.display = 'block';
+    highScoreElement.style.display = 'block';
+    gameRunning = true;
+    introActive = false;
+    resetGame();
+}
 
 function createCloud() {
     clouds.push({
@@ -357,22 +423,29 @@ function resetGame() {
 function jump() {
     if (gameRunning) {
         bird.velocity = bird.jump * (canvas.height/600); // Scale jump force
-    } else {
+    } else if(!introActive) {
         resetGame();
     }
 }
 
 // Event listeners
+startButton.addEventListener('click', startGame);
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
-        jump();
+        if(introActive) startGame();
+        else jump();
     }
 });
 
-canvas.addEventListener('click', jump);
+canvas.addEventListener('click', (e) => {
+    if(introActive) startGame();
+    else jump();
+});
+
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    jump();
+    if(introActive) startGame();
+    else jump();
 });
 
 // Game loop

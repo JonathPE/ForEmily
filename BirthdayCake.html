@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Cake with 19 Candles</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f8f8;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+        
+        .cake-container {
+            text-align: center;
+        }
+        
+        h1 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+        
+        .flame {
+            filter: url(#glow);
+            transform-origin: center bottom;
+            animation: flicker 0.5s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0% { transform: scaleY(1) scaleX(1); }
+            25% { transform: scaleY(1.1) scaleX(0.95); }
+            50% { transform: scaleY(0.95) scaleX(1.05); }
+            75% { transform: scaleY(1.05) scaleX(1); }
+            100% { transform: scaleY(1) scaleX(1.05); }
+        }
+        
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #ff5252;
+        }
+        
+        .microphone-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .mic-status {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        
+        .mic-active {
+            background-color: #4CAF50;
+        }
+        
+        .mic-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .blow-strength {
+            width: 200px;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+        
+        .blow-meter {
+            height: 100%;
+            width: 0%;
+            background-color: #4CAF50;
+            transition: width 0.1s ease;
+        }
+        
+        .balloon {
+            animation: floatUp 5s linear forwards;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+            }
+            25% {
+                transform: translateY(-100) translateX(10);
+            }
+            50% {
+                transform: translateY(-200) translateX(0);
+            }
+            75% {
+                transform: translateY(-300) translateX(-10);
+            }
+            100% {
+                transform: translateY(-400) translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cake-container">
+        <h1>HAPPY BIRTHDAY MY BEAUTIFUL WIFE!!!!!</h1>
+        <svg viewBox="0 0 600 400" width="600" height="400">
+            <defs>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                    <feComposite in="SourceGraphic" in2="coloredBlur" operator="over"/>
+                </filter>
+                <radialGradient id="flameGradient" cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.8">
+                    <stop offset="0%" stop-color="#ffff00" />
+                    <stop offset="40%" stop-color="#ffcc00" />
+                    <stop offset="70%" stop-color="#ff6600" />
+                    <stop offset="100%" stop-color="#ff3300" />
+                </radialGradient>
+                <radialGradient id="flameGlow" cx="0.5" cy="0.5" r="0.8" fx="0.5" fy="0.8">
+                    <stop offset="0%" stop-color="rgba(255, 255, 160, 0.8)" />
+                    <stop offset="100%" stop-color="rgba(255, 120, 0, 0)" />
+                </radialGradient>
+            </defs>
+            
+            <!-- 2.5D Cake with perspective -->
+            <!-- Cake plate -->
+            <ellipse cx="300" cy="350" rx="200" ry="50" fill="#d3d3d3" />
+            
+            <!-- Bottom layer -->
+            <path d="M140,250 L140,300 C140,322 210,350 300,350 C390,350 460,322 460,300 L460,250 C460,272 390,300 300,300 C210,300 140,272 140,250 Z" fill="#f9d5a7" stroke="#e6a970" stroke-width="2" />
+            <ellipse cx="300" cy="250" rx="160" ry="40" fill="#f9d5a7" stroke="#e6a970" stroke-width="2" />
+
+            <!-- Middle layer -->
+            <path d="M160,200 L160,250 C160,272 220,290 300,290 C380,290 440,272 440,250 L440,200 C440,222 380,240 300,240 C220,240 160,222 160,200 Z" fill="#ffb6c1" stroke="#e6a970" stroke-width="2" />
+            <ellipse cx="300" cy="200" rx="140" ry="35" fill="#ffb6c1" stroke="#e6a970" stroke-width="2" />
+
+            <!-- Top layer -->
+            <path d="M180,150 L180,200 C180,216 230,230 300,230 C370,230 420,216 420,200 L420,150 C420,166 370,180 300,180 C230,180 180,166 180,150 Z" fill="#a0e6ff" stroke="#e6a970" stroke-width="2" />
+            <ellipse cx="300" cy="150" rx="120" ry="30" fill="#a0e6ff" stroke="#e6a970" stroke-width="2" />
+            
+            <!-- Frosting decorations -->
+            <path d="M180,150 Q200,140 220,142 Q240,138 260,144 Q280,138 300,140 Q320,136 340,144 Q360,138 380,144 Q400,140 420,150" fill="none" stroke="#ffffff" stroke-width="5" />
+            
+            <!-- Candles and balloons -->
+            <g id="candles"></g>
+            <g id="balloons"></g>
+        </svg>
+        
+        <div class="microphone-container">
+            <div class="mic-indicator">
+                <div class="mic-status" id="micStatus"></div>
+                <span id="micText"></span>
+                <div class="blow-strength">
+                    <div class="blow-meter" id="blowMeter"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button id="startMic">Make A Wish</button>
+            <button id="resetCandles">Reset Candles</button>
+            <button id="openPresent" style="display:none;" onclick="window.location.href='present.html'">Open Present</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const candlesGroup = document.getElementById('candles');
+            const resetButton = document.getElementById('resetCandles');
+            const startMicButton = document.getElementById('startMic');
+            const micStatus = document.getElementById('micStatus');
+            const micText = document.getElementById('micText');
+            const blowMeter = document.getElementById('blowMeter');
+            const numCandles = 19;
+            const candleWidth = 6;
+            const candleHeight = 25;
+            
+            // Audio processing variables
+            let audioContext;
+            let analyser;
+            let microphone;
+            let javascriptNode;
+            let isBlowing = false;
+            let blowingTimeout;
+            let candles = [];
+            let balloonsTriggered = false;
+            
+            // Audio processing settings
+            const blowThreshold = 50;
+            const maxThreshold = 200;
+            
+            // Create candle positions
+            const candlePositions = [];
+            const cakeTopCenterX = 300;
+            const cakeTopCenterY = 150;
+            const outerRadiusX = 100;
+            const outerRadiusY = 24;
+            const innerRadiusX = 60;
+            const innerRadiusY = 15;
+            const outerCandles = 12;
+            
+            for (let i = 0; i < outerCandles; i++) {
+                const angle = (i * (2 * Math.PI / outerCandles));
+                const x = cakeTopCenterX + outerRadiusX * Math.cos(angle);
+                const y = cakeTopCenterY + outerRadiusY * Math.sin(angle);
+                let scale = 1;
+                if (y < cakeTopCenterY) {
+                    const distanceRatio = (cakeTopCenterY - y) / outerRadiusY;
+                    scale = 0.8 + 0.2 * (1 - distanceRatio);
+                }
+                candlePositions.push({x, y, scale});
+            }
+            
+            const innerCandles = numCandles - outerCandles;
+            for (let i = 0; i < innerCandles; i++) {
+                const angle = (i * (2 * Math.PI / innerCandles)) + (Math.PI / innerCandles);
+                const x = cakeTopCenterX + innerRadiusX * Math.cos(angle);
+                const y = cakeTopCenterY + innerRadiusY * Math.sin(angle);
+                let scale = 1;
+                if (y < cakeTopCenterY) {
+                    const distanceRatio = (cakeTopCenterY - y) / innerRadiusY;
+                    scale = 0.85 + 0.15 * (1 - distanceRatio);
+                }
+                candlePositions.push({x, y, scale});
+            }
+            
+            // Create candles
+            for (let i = 0; i < numCandles; i++) {
+                const candleX = candlePositions[i].x;
+                const candleY = candlePositions[i].y;
+                const scale = candlePositions[i].scale;
+                
+                const candleGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                candleGroup.classList.add("candle");
+                candleGroup.setAttribute("data-lit", "true");
+                candleGroup.setAttribute("transform", `translate(${candleX},${candleY}) scale(${scale}) translate(${-candleX},${-candleY})`);
+                
+                const adjustedCandleHeight = candleHeight;
+                const candle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                candle.setAttribute("x", candleX - (candleWidth/2));
+                candle.setAttribute("y", candleY - adjustedCandleHeight);
+                candle.setAttribute("width", candleWidth);
+                candle.setAttribute("height", adjustedCandleHeight);
+                candle.setAttribute("rx", 2);
+                candle.setAttribute("ry", 2);
+                const colors = ["#ff6b6b", "#5ce1e6", "#ffce5c", "#c3ff5c", "#cb6ce6"];
+                candle.setAttribute("fill", colors[i % colors.length]);
+                
+                const wickHeight = 6;
+                const wick = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                wick.setAttribute("x", candleX - 1);
+                wick.setAttribute("y", candleY - adjustedCandleHeight - wickHeight);
+                wick.setAttribute("width", 2);
+                wick.setAttribute("height", wickHeight);
+                wick.setAttribute("fill", "#333");
+                
+                const flameGlow = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                flameGlow.classList.add("flame", "glow");
+                flameGlow.setAttribute("cx", candleX);
+                flameGlow.setAttribute("cy", candleY - adjustedCandleHeight - 10);
+                flameGlow.setAttribute("rx", 7);
+                flameGlow.setAttribute("ry", 9);
+                flameGlow.setAttribute("fill", "url(#flameGlow)");
+                
+                const flame = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                flame.classList.add("flame");
+                const flameWidth = 3;
+                const flameHeight = 10;
+                flame.setAttribute("d", `M${candleX - flameWidth},${candleY - adjustedCandleHeight - 6} 
+                                       Q${candleX},${candleY - adjustedCandleHeight - 6 - flameHeight} ${candleX + flameWidth},${candleY - adjustedCandleHeight - 6} 
+                                       Q${candleX + 1.5},${candleY - adjustedCandleHeight - 9} ${candleX},${candleY - adjustedCandleHeight - 8} 
+                                       Q${candleX - 1.5},${candleY - adjustedCandleHeight - 9} ${candleX - flameWidth},${candleY - adjustedCandleHeight - 6}`);
+                flame.setAttribute("fill", "url(#flameGradient)");
+                
+                candleGroup.appendChild(candle);
+                candleGroup.appendChild(wick);
+                candleGroup.appendChild(flameGlow);
+                candleGroup.appendChild(flame);
+                candlesGroup.appendChild(candleGroup);
+                
+                candles.push({
+                    element: candleGroup,
+                    flame: flame,
+                    flameGlow: flameGlow,
+                    position: {x: candleX, y: candleY}
+                });
+            }
+            
+            sortCandlesByDepth();
+            
+            resetButton.addEventListener('click', function() {
+                candles.forEach(candle => {
+                    candle.flame.style.display = "block";
+                    candle.flameGlow.style.display = "block";
+                    candle.element.setAttribute("data-lit", "true");
+                });
+                balloonsTriggered = false;
+                document.getElementById("openPresent").style.display = "none";
+            });
+            
+            startMicButton.addEventListener('click', function() {
+                if (!audioContext) {
+                    initAudio();
+                } else {
+                    if (microphone) {
+                        stopMicrophone();
+                    } else {
+                        startMicrophone();
+                    }
+                }
+            });
+            
+            function sortCandlesByDepth() {
+                candles.sort((a, b) => a.position.y - b.position.y);
+                candles.forEach(candle => {
+                    const parent = candle.element.parentNode;
+                    parent.removeChild(candle.element);
+                    parent.appendChild(candle.element);
+                });
+            }
+            
+            function initAudio() {
+                try {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                    analyser = audioContext.createAnalyser();
+                    analyser.smoothingTimeConstant = 0.3;
+                    analyser.fftSize = 1024;
+                    startMicrophone();
+                } catch (e) {
+                    alert('Web Audio API is not supported in this browser');
+                    console.error(e);
+                }
+            }
+            
+            function startMicrophone() {
+                micText.textContent = "Microphone: Requesting permission...";
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                    microphone = audioContext.createMediaStreamSource(stream);
+                    microphone.connect(analyser);
+                    javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+                    analyser.connect(javascriptNode);
+                    javascriptNode.connect(audioContext.destination);
+                    javascriptNode.onaudioprocess = processAudio;
+                    micStatus.classList.add('mic-active');
+                    micText.textContent = "";
+                    startMicButton.textContent = "Stop Microphone";
+                }).catch(function(err) {
+                    alert('Error accessing microphone: ' + err.message);
+                    console.error(err);
+                    micText.textContent = "Microphone: Error - Permission denied";
+                });
+            }
+            
+            function stopMicrophone() {
+                if (javascriptNode) {
+                    javascriptNode.onaudioprocess = null;
+                    if (microphone) {
+                        microphone.mediaStream.getTracks()[0].stop();
+                    }
+                    analyser.disconnect();
+                    javascriptNode.disconnect();
+                    microphone = null;
+                    micStatus.classList.remove('mic-active');
+                    micText.textContent = "Microphone: Inactive";
+                    startMicButton.textContent = "Start Microphone";
+                }
+            }
+            
+            function processAudio(event) {
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
+                }
+                const average = sum / bufferLength;
+                const percentage = Math.min(100, (average / maxThreshold) * 100);
+                blowMeter.style.width = percentage + '%';
+                
+                if (average > blowThreshold) {
+                    const litCandles = candles.filter(candle => 
+                        candle.element.getAttribute("data-lit") === "true"
+                    );
+                    if (litCandles.length > 0) {
+                        const normalizedStrength = Math.min(1, (average - blowThreshold) / (maxThreshold - blowThreshold));
+                        const candlesToBlow = Math.max(1, Math.floor(normalizedStrength * litCandles.length));
+                        for (let i = 0; i < candlesToBlow && i < litCandles.length; i++) {
+                            const randomIndex = Math.floor(Math.random() * litCandles.length);
+                            const candle = litCandles.splice(randomIndex, 1)[0];
+                            candle.flame.style.display = "none";
+                            candle.flameGlow.style.display = "none";
+                            candle.element.setAttribute("data-lit", "false");
+                        }
+                        checkAllCandlesOut();
+                    }
+                    if (!isBlowing) {
+                        isBlowing = true;
+                    }
+                    clearTimeout(blowingTimeout);
+                    blowingTimeout = setTimeout(() => {
+                        isBlowing = false;
+                    }, 300);
+                }
+            }
+            
+            function checkAllCandlesOut() {
+                const allOut = candles.every(candle => 
+                    candle.element.getAttribute("data-lit") === "false"
+                );
+                if (allOut && !balloonsTriggered) {
+                    balloonsTriggered = true;
+                    triggerBalloons();
+                    document.getElementById("openPresent").style.display = "block";
+                }
+            }
+            
+            function createBalloon(x, color, duration) {
+                const balloonGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                balloonGroup.setAttribute("transform", `translate(${x}, 400)`);
+                balloonGroup.classList.add("balloon");
+                
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", 0);
+                circle.setAttribute("cy", 0);
+                circle.setAttribute("r", 10);
+                circle.setAttribute("fill", color);
+                
+                const string = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                string.setAttribute("x1", 0);
+                string.setAttribute("y1", 10);
+                string.setAttribute("x2", 0);
+                string.setAttribute("y2", 30);
+                string.setAttribute("stroke", "#666");
+                string.setAttribute("stroke-width", 1);
+                
+                balloonGroup.appendChild(circle);
+                balloonGroup.appendChild(string);
+                balloonGroup.style.animationDuration = duration + "s";
+                
+                return balloonGroup;
+            }
+            
+            function triggerBalloons() {
+                const balloonsGroup = document.getElementById("balloons");
+                const numBalloons = 20;
+                const colors = ["#ff6b6b", "#5ce1e6", "#ffce5c", "#c3ff5c", "#cb6ce6"];
+                for (let i = 0; i < numBalloons; i++) {
+                    const x = 100 + Math.random() * 400;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const duration = 3 + Math.random() * 4;
+                    const balloon = createBalloon(x, color, duration);
+                    balloonsGroup.appendChild(balloon);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

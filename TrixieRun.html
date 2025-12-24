@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Snowy Dinosaur Game v8</title>
+    <meta charset="utf-8" />
+    <title>Snowy Dinosaur Game — Trixie (Full) with Music</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --max-player-tilt: 30deg;
+            --ground-percent: 8%;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
             margin: 0;
             display: flex;
@@ -14,13 +23,13 @@
             font-family: Arial, sans-serif;
             touch-action: manipulation;
         }
-        
+
         #gameContainer {
             position: relative;
             width: 90vw;
             height: 90vh;
-            max-width: 800px;
-            max-height: 400px;
+            max-width: 900px;
+            max-height: 480px;
             overflow: hidden;
             background: linear-gradient(to bottom, #b0d0ff, #d0e8ff);
             cursor: pointer;
@@ -30,28 +39,67 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 8%;
+            height: var(--ground-percent);
             min-height: 30px;
             background: #ffffff;
             z-index: 3;
         }
 
+        /* Player container */
         #player {
             position: absolute;
-            bottom: 8%;
             left: 50px;
-            width: 3.5%;
-            height: 8%;
-            min-width: 25px;
-            min-height: 25px;
-            background: #2c3e50;
-            border-radius: 4px;
-            z-index: 4;
+            bottom: var(--ground-percent);
+            width: 6%;
+            height: 14%;
+            min-width: 40px;
+            min-height: 40px;
+            z-index: 6;
+            pointer-events: none;
         }
 
+        /* Trixie image */
+        #player img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform-origin: 50% 90%; /* pivot around feet area */
+            will-change: transform;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Running bob when on ground (starting transform places sprite visually touching the floor) */
+        @keyframes runBob {
+            0% { transform: translateY(8px) rotate(0deg); }
+            25% { transform: translateY(4px) rotate(-2deg); }
+            50% { transform: translateY(8px) rotate(0deg); }
+            75% { transform: translateY(6px) rotate(1deg); }
+            100% { transform: translateY(8px) rotate(0deg); }
+        }
+        #player.running img {
+            animation: runBob 300ms ease-in-out infinite;
+        }
+
+        /* Shadow under the player */
+        #player .shadow {
+            position: absolute;
+            bottom: -6%;
+            left: 50%;
+            transform: translateX(-50%) scale(1);
+            width: 40%;
+            height: 6%;
+            background: rgba(0,0,0,0.28);
+            border-radius: 50%;
+            filter: blur(3px);
+            z-index: 4;
+            transition: transform 120ms linear, opacity 120ms linear;
+        }
+
+        /* Obstacles and environment */
         .obstacle {
             position: absolute;
-            bottom: 6%;
+            bottom: calc(var(--ground-percent) - 2%);
             width: 3%;
             height: 9%;
             min-width: 20px;
@@ -59,35 +107,125 @@
             background: #636e72;
             clip-path: polygon(100% 80%, 0% 100%, 0% 20%, 50% 0%, 100% 20%);
             border-radius: 3px;
-            z-index: 2;
+            z-index: 5;
             box-shadow: inset 0 5px 5px rgba(0,0,0,0.2);
         }
 
         .mountain {
             position: absolute;
-            bottom: 8%;
+            bottom: calc(var(--ground-percent) - 0.5%);
             width: var(--mountain-width);
             height: var(--mountain-height);
             clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
             z-index: 1;
         }
 
-        .snowflake {
+        .christmas-tree {
             position: absolute;
-            color: #fff;
-            user-select: none;
-            z-index: 0;
+            bottom: calc(var(--ground-percent) - 0.5%);
+            width: 50px;
+            height: 56px;
+            z-index: 1;
         }
+
+        /* tree parts (kept from original) */
+        .tree-main {
+            position: absolute;
+            bottom: 0;
+            left: 25px;
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 56px solid #1a5f3f;
+            transform: translateX(-25px);
+        }
+        .tree-main::before {
+            content: '';
+            position: absolute;
+            bottom: -56px;
+            left: -20px;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 40px solid #2d7a52;
+        }
+        .tree-main::after {
+            content: '';
+            position: absolute;
+            bottom: -56px;
+            left: -15px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid #3d9463;
+        }
+
+        .tree-trunk {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 8px;
+            background: #5c4033;
+            border-radius: 1px;
+        }
+
+        .tree-star {
+            position: absolute;
+            top: -3px;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            border-bottom: 5px solid #ffd700;
+            filter: drop-shadow(0 0 3px #ffd700);
+            animation: miniStarGlow 2s ease-in-out infinite;
+            transform: translateX(-3px);
+        }
+        .tree-star::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: -3px;
+            width: 0;
+            height: 0;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            border-top: 5px solid #ffd700;
+        }
+        @keyframes miniStarGlow {
+            0%, 100% { filter: drop-shadow(0 0 3px #ffd700); }
+            50% { filter: drop-shadow(0 0 5px #ffd700) drop-shadow(0 0 8px #ffed4e); }
+        }
+
+        .tree-light { position: absolute; width: 2px; height: 2px; border-radius: 50%; opacity: 0.9; }
+        .tree-light.red { background: #ff4444; box-shadow: 0 0 2px #ff4444; animation: glowRed 2s ease-in-out infinite; }
+        .tree-light.blue { background: #4444ff; box-shadow: 0 0 2px #4444ff; animation: glowBlue 2s ease-in-out infinite 0.5s; }
+        .tree-light.yellow { background: #ffff44; box-shadow: 0 0 2px #ffff44; animation: glowYellow 2s ease-in-out infinite 1s; }
+        .tree-light.green { background: #44ff44; box-shadow: 0 0 2px #44ff44; animation: glowGreen 2s ease-in-out infinite 1.5s; }
+        @keyframes glowRed { 0%,100%{box-shadow:0 0 2px #ff4444;opacity:.9;}50%{box-shadow:0 0 4px #ff4444,0 0 6px #ff6666;opacity:1;} }
+        @keyframes glowBlue { 0%,100%{box-shadow:0 0 2px #4444ff;opacity:.9;}50%{box-shadow:0 0 4px #4444ff,0 0 6px #6666ff;opacity:1;} }
+        @keyframes glowYellow { 0%,100%{box-shadow:0 0 2px #ffff44;opacity:.9;}50%{box-shadow:0 0 4px #ffff44,0 0 6px #ffff88;opacity:1;} }
+        @keyframes glowGreen { 0%,100%{box-shadow:0 0 2px #44ff44;opacity:.9;}50%{box-shadow:0 0 4px #44ff44,0 0 6px #66ff66;opacity:1;} }
+
+        .tree-tinsel { position: absolute; height: 1px; background: linear-gradient(90deg, #ff0000, #cc0000, #ff0000); border-radius: 1px; animation: shimmer 3s ease-in-out infinite; }
+        @keyframes shimmer { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
+
+        .snowflake { position: absolute; color: #fff; user-select: none; z-index: 0; }
 
         #score {
             position: absolute;
             top: 10px;
-            right: 10px;
-            font-size: 20px;
+            right: 12px;
+            font-size: 18px;
             color: #2c3e50;
-            z-index: 4;
+            z-index: 7;
             font-family: 'Press Start 2P', cursive;
-            font-size: 2vh;
         }
 
         #deathScreen {
@@ -97,7 +235,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.7);
-            z-index: 5;
+            z-index: 20;
             display: none;
             flex-direction: column;
             align-items: center;
@@ -107,35 +245,48 @@
             font-family: 'Press Start 2P', cursive;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
+        #deathScreen h2 { font-size: 4vh; margin: 0 0 2vh 0; }
+        #deathScreen p { font-size: 2.5vh; margin: 1vh 0; }
 
-        #deathScreen h2 {
-            font-size: 4vh;
-            margin: 0 0 2vh 0;
-        }
-
-        #deathScreen p {
-            font-size: 2.5vh;
-            margin: 1vh 0;
+        /* Music toggle button */
+        #musicToggle {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            z-index: 8;
+            background: rgba(255,255,255,0.85);
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 11px;
+            color: #2c3e50;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
         }
 
         @media (max-width: 600px) {
-            #player {
-                width: 5vw;
-                height: 8vw;
-            }
-            .obstacle {
-                width: 4vw;
-                height: 6vw;
-            }
+            #player { width: 12vw; height: 20vw; left: 12px; }
+            .obstacle { width: 12vw; height: 18vw; }
+            #score { font-size: 12px; }
+            #musicToggle { font-size: 9px; padding: 4px 6px; }
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
+    <div id="gameContainer" role="application" aria-label="Trixie running game">
+        <div id="musicToggle" role="button" tabindex="0" aria-pressed="false" aria-label="Toggle music">🔊 MUSIC</div>
         <div id="score">0</div>
-        <div id="player"></div>
+
+        <!-- Player uses TrixieTransparent.png - put file in same folder -->
+        <div id="player" class="running" aria-hidden="true">
+            <img id="trixieSprite" src="TrixieTransparent.png" alt="Trixie">
+            <div class="shadow"></div>
+        </div>
+
         <div id="ground"></div>
-        <div id="deathScreen">
+
+        <div id="deathScreen" role="dialog" aria-hidden="true">
             <h2>GAME OVER!</h2>
             <p>SCORE: <span id="finalScore">0</span></p>
             <p>HIGH SCORE: <span id="highScore">0</span></p>
@@ -144,181 +295,324 @@
     </div>
 
     <script>
-        const player = document.getElementById('player');
+        // Elements
         const gameContainer = document.getElementById('gameContainer');
-        const scoreElement = document.getElementById('score');
+        const player = document.getElementById('player');
+        const trixieImg = document.getElementById('trixieSprite');
+        const playerShadow = player.querySelector('.shadow');
+        const ground = document.getElementById('ground');
+        const scoreEl = document.getElementById('score');
         const deathScreen = document.getElementById('deathScreen');
-        const finalScoreElement = document.getElementById('finalScore');
-        const highScoreElement = document.getElementById('highScore');
-        
+        const finalScoreEl = document.getElementById('finalScore');
+        const highScoreEl = document.getElementById('highScore');
+        const musicToggle = document.getElementById('musicToggle');
+
+        // State
         let isJumping = false;
         let isDead = false;
         let score = 0;
+        let highScore = 0;
         let gravity = 0.9;
         let velocity = 0;
-        let playerBottom = 8;
-        let highScore = localStorage.getItem('highScore') || 0;
+        let playerBottom = parseFloat(getComputedStyle(ground).height) / gameContainer.offsetHeight * 100; // initial percent
+        playerBottom = 8; // start percent from CSS baseline
         let animationIDs = [];
         let intervalIDs = [];
         let gameSpeed = 8;
         const maxGameSpeed = 20;
 
-        highScoreElement.textContent = highScore;
+        highScoreEl.textContent = highScore;
 
-        function createMountain() {
-            const mountain = document.createElement('div');
-            mountain.className = 'mountain';
-            
-            const width = 200 + Math.random() * 300;
-            const height = 100 + Math.random() * 150;
-            const snowPercentage = 10 + Math.random() * 15;
-            
-            mountain.style.setProperty('--mountain-width', `${width}px`);
-            mountain.style.setProperty('--mountain-height', `${height}px`);
-            mountain.style.right = `-${width}px`;
-            mountain.style.background = `linear-gradient(
-                to bottom,
-                white ${snowPercentage}%,
-                #95a5a6 ${snowPercentage + 0.1}%
-            )`;
-            
-            gameContainer.appendChild(mountain);
-            
-            let position = -width;
+        // ---- Background music setup ----
+        // Put HamiltonM.mp3 in the same folder as this HTML file.
+        const bgMusic = new Audio('HamiltonM.mp3');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.45; // adjust 0.0 - 1.0
+        let musicStarted = false; // whether we've attempted to start (requires user interaction)
+        let musicMutedByUser = false; // user toggled mute
+
+        function startMusic() {
+            // Start music only once on first user interaction to satisfy browser autoplay policy
+            if (!musicStarted) {
+                musicStarted = true;
+                // if muted by user, don't auto-play audible music
+                if (!musicMutedByUser) {
+                    bgMusic.play().catch((err) => {
+                        // play might fail if browser still blocks; that's okay
+                        console.log('Music play prevented:', err);
+                    });
+                }
+            } else {
+                // if already started but currently paused and not muted, resume
+                if (!bgMusic.paused && !musicMutedByUser) {
+                    // already playing
+                } else if (!musicMutedByUser) {
+                    bgMusic.play().catch(() => {});
+                }
+            }
+            updateMusicToggleLabel();
+        }
+
+        function toggleMute() {
+            musicMutedByUser = !musicMutedByUser;
+            bgMusic.muted = musicMutedByUser;
+            updateMusicToggleLabel();
+        }
+
+        function updateMusicToggleLabel() {
+            musicToggle.textContent = musicMutedByUser ? '🔇 MUSIC' : '🔊 MUSIC';
+            musicToggle.setAttribute('aria-pressed', String(musicMutedByUser));
+        }
+
+        // keyboard shortcut M to mute/unmute
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'm') {
+                toggleMute();
+            }
+        });
+
+        musicToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // We treat this as a user interaction (allowed to unmute)
+            if (!musicStarted) {
+                musicStarted = true;
+            }
+            toggleMute();
+        });
+
+        musicToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (!musicStarted) { musicStarted = true; }
+                toggleMute();
+            }
+        });
+
+        // ---- Environment creators ----
+        function createChristmasTree() {
+            const tree = document.createElement('div');
+            tree.className = 'christmas-tree';
+            tree.style.right = '-70px';
+            tree.innerHTML = `
+                <div class="tree-star"></div>
+                <div class="tree-trunk"></div>
+                <div class="tree-main"></div>
+                <div class="tree-light red" style="top: 11px; left: 24px;"></div>
+                <div class="tree-light blue" style="top: 14px; left: 20px;"></div>
+                <div class="tree-light yellow" style="top: 14px; left: 28px;"></div>
+                <div class="tree-light green" style="top: 18px; left: 18px;"></div>
+                <div class="tree-light red" style="top: 19px; left: 30px;"></div>
+                <div class="tree-light blue" style="top: 23px; left: 16px;"></div>
+                <div class="tree-light yellow" style="top: 24px; left: 24px;"></div>
+                <div class="tree-light green" style="top: 26px; left: 33px;"></div>
+                <div class="tree-light red" style="top: 29px; left: 14px;"></div>
+                <div class="tree-light blue" style="top: 31px; left: 35px;"></div>
+                <div class="tree-light yellow" style="top: 34px; left: 12px;"></div>
+                <div class="tree-light green" style="top: 36px; left: 24px;"></div>
+                <div class="tree-light red" style="top: 37px; left: 37px;"></div>
+                <div class="tree-light blue" style="top: 41px; left: 10px;"></div>
+                <div class="tree-light yellow" style="top: 42px; left: 21px;"></div>
+                <div class="tree-light green" style="top: 43px; left: 28px;"></div>
+                <div class="tree-light red" style="top: 44px; left: 39px;"></div>
+                <div class="tree-light blue" style="top: 48px; left: 9px;"></div>
+                <div class="tree-light yellow" style="top: 49px; left: 40px;"></div>
+                <div class="tree-tinsel" style="top: 16px; left: 16px; width: 17px; transform: rotate(-12deg);"></div>
+                <div class="tree-tinsel" style="top: 22px; left: 12px; width: 26px; transform: rotate(10deg);"></div>
+                <div class="tree-tinsel" style="top: 28px; left: 9px; width: 33px; transform: rotate(-8deg);"></div>
+                <div class="tree-tinsel" style="top: 34px; left: 6px; width: 38px; transform: rotate(10deg);"></div>
+                <div class="tree-tinsel" style="top: 40px; left: 4px; width: 42px; transform: rotate(-9deg);"></div>
+                <div class="tree-tinsel" style="top: 46px; left: 2px; width: 46px; transform: rotate(7deg);"></div>
+            `;
+            gameContainer.appendChild(tree);
+
+            let pos = -70;
             function animate() {
-                position += gameSpeed/8;
-                mountain.style.right = `${position}px`;
-                
-                if (position < gameContainer.offsetWidth + width) {
+                pos += gameSpeed / 6;
+                tree.style.right = pos + 'px';
+                if (pos < gameContainer.offsetWidth + 100) {
                     const id = requestAnimationFrame(animate);
                     animationIDs.push(id);
                 } else {
-                    mountain.remove();
+                    tree.remove();
+                }
+            }
+            animate();
+        }
+
+        function createMountain() {
+            const m = document.createElement('div');
+            m.className = 'mountain';
+            const width = 200 + Math.random() * 300;
+            const height = 100 + Math.random() * 150;
+            const snowPerc = 8 + Math.random() * 18;
+            m.style.setProperty('--mountain-width', `${width}px`);
+            m.style.setProperty('--mountain-height', `${height}px`);
+            m.style.right = `-${width}px`;
+            m.style.background = `linear-gradient(to bottom, white ${snowPerc}%, #95a5a6 ${snowPerc+0.1}%)`;
+            gameContainer.appendChild(m);
+
+            let pos = -width;
+            function animate() {
+                pos += gameSpeed / 8;
+                m.style.right = pos + 'px';
+                if (pos < gameContainer.offsetWidth + width) {
+                    const id = requestAnimationFrame(animate);
+                    animationIDs.push(id);
+                } else {
+                    m.remove();
                 }
             }
             animate();
         }
 
         function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snowflake';
-            snowflake.innerHTML = '❄';
-            snowflake.style.left = Math.random() * gameContainer.offsetWidth + 'px';
-            snowflake.style.fontSize = (10 + Math.random() * 10) + 'px';
-            snowflake.style.opacity = 0.7;
-            gameContainer.appendChild(snowflake);
+            const s = document.createElement('div');
+            s.className = 'snowflake';
+            s.innerHTML = '❄';
+            s.style.left = Math.random() * gameContainer.offsetWidth + 'px';
+            s.style.fontSize = (10 + Math.random() * 12) + 'px';
+            s.style.opacity = 0.7;
+            gameContainer.appendChild(s);
 
-            let top = 0;
+            let top = -20;
             function fall() {
-                top += 2;
-                snowflake.style.top = top + 'px';
-                
+                top += 2 + Math.random() * 2;
+                s.style.top = top + 'px';
                 if (top < gameContainer.offsetHeight) {
                     const id = requestAnimationFrame(fall);
                     animationIDs.push(id);
                 } else {
-                    snowflake.remove();
+                    s.remove();
                 }
             }
             fall();
         }
 
+        // ---- Player / physics / animation ----
         function jump() {
-            if (!isJumping && !isDead) {
+            startMusic(); // start music on first jump / interaction
+            if (isDead) return;
+            if (!isJumping) {
                 isJumping = true;
-                velocity = 9;
+                velocity = 9; // initial upward velocity
             }
         }
 
         function createObstacle() {
-            const obstacle = document.createElement('div');
-            obstacle.className = 'obstacle';
-            obstacle.style.right = '-25px';
-            obstacle.style.height = 30 + Math.random() * 20 + 'px';
-            gameContainer.appendChild(obstacle);
+            const o = document.createElement('div');
+            o.className = 'obstacle';
+            o.style.right = '-36px';
+            o.style.height = (30 + Math.random() * 28) + 'px';
+            gameContainer.appendChild(o);
 
-            let position = -25;
+            let pos = -36;
             function animate() {
-                position += gameSpeed;
-                obstacle.style.right = position + 'px';
-
+                pos += gameSpeed;
+                o.style.right = pos + 'px';
+                // collision using bounding boxes
                 const playerRect = player.getBoundingClientRect();
-                const obstacleRect = obstacle.getBoundingClientRect();
-                
+                const obstRect = o.getBoundingClientRect();
                 if (
-                    playerRect.right > obstacleRect.left &&
-                    playerRect.left < obstacleRect.right &&
-                    playerRect.bottom > obstacleRect.top
+                    playerRect.right > obstRect.left &&
+                    playerRect.left < obstRect.right &&
+                    playerRect.bottom > obstRect.top
                 ) {
                     gameOver();
                 }
 
-                if (position < gameContainer.offsetWidth + 25) {
+                if (pos < gameContainer.offsetWidth + 50) {
                     const id = requestAnimationFrame(animate);
                     animationIDs.push(id);
                 } else {
-                    obstacle.remove();
+                    o.remove();
                 }
             }
             animate();
+        }
+
+        function generateObstacleRandomly() {
+            createObstacle();
+            const next = 700 + Math.random() * 900;
+            const id = setTimeout(generateObstacleRandomly, next);
+            intervalIDs.push(id);
         }
 
         function gameOver() {
             if (isDead) return;
             isDead = true;
             deathScreen.style.display = 'flex';
-            finalScoreElement.textContent = score;
-            
+            deathScreen.setAttribute('aria-hidden', 'false');
+            finalScoreEl.textContent = score;
             if (score > highScore) {
                 highScore = score;
-                localStorage.setItem('highScore', highScore);
-                highScoreElement.textContent = highScore;
+                highScoreEl.textContent = highScore;
+            } else {
+                highScoreEl.textContent = highScore;
             }
-            
+
+            // pause music on death (optional behavior)
+            if (!bgMusic.paused) {
+                bgMusic.pause();
+            }
+
+            // stop animation and intervals
             animationIDs.forEach(id => cancelAnimationFrame(id));
             intervalIDs.forEach(id => clearInterval(id));
+            intervalIDs = [];
+            animationIDs = [];
+            // stop running animation and settle to grounded pose
+            player.classList.remove('running');
+            trixieImg.style.transition = 'transform 180ms ease';
+            trixieImg.style.transform = 'translateY(9px) rotate(0deg)';
         }
 
         function resetGame() {
-            isDead = false;
-            score = 0;
-            gameSpeed = 8;
-            scoreElement.textContent = '0';
-            playerBottom = 8;
-            velocity = 0;
-            isJumping = false;
-            player.style.bottom = '8%';
-            
-            document.querySelectorAll('.obstacle, .mountain, .snowflake').forEach(el => el.remove());
-            
+            startMusic(); // attempt to start/resume music on restart
+            // clear environment
+            document.querySelectorAll('.obstacle, .mountain, .snowflake, .christmas-tree').forEach(el => el.remove());
+            animationIDs.forEach(id => cancelAnimationFrame(id));
+            intervalIDs.forEach(id => clearInterval(id));
             animationIDs = [];
             intervalIDs = [];
-            
+
+            isDead = false;
+            isJumping = false;
+            score = 0;
+            scoreEl.textContent = '0';
+            velocity = 0;
+            gameSpeed = 8;
+            playerBottom = 8;
+            player.style.bottom = playerBottom + '%';
+            deathScreen.style.display = 'none';
+            deathScreen.setAttribute('aria-hidden', 'true');
+            // re-enable running bob
+            player.classList.add('running');
+            trixieImg.style.transition = '';
+            trixieImg.style.transform = 'translateY(9px) rotate(0deg)';
+
+            // restart spawning
             intervalIDs.push(setInterval(createMountain, 3500));
+            intervalIDs.push(setInterval(createChristmasTree, 8000));
             intervalIDs.push(setInterval(createSnowflake, 100));
             intervalIDs.push(setInterval(() => {
-                score++;
-                scoreElement.textContent = score;
-                if (score % 100 === 0 && gameSpeed < maxGameSpeed) {
-                    gameSpeed += 1;
+                if (!isDead) {
+                    score++;
+                    scoreEl.textContent = score;
+                    if (score % 100 === 0 && gameSpeed < maxGameSpeed) gameSpeed += 1;
                 }
             }, 100));
-            setTimeout(generateObstacle, 1500);
-            
-            deathScreen.style.display = 'none';
+            // obstacle generation
+            setTimeout(generateObstacleRandomly, 1200);
+
+            // resume update loop
             updatePlayer();
         }
 
-        function generateObstacle() {
-            createObstacle();
-            const nextInterval = 800 + Math.random() * 800;
-            const id = setTimeout(generateObstacle, nextInterval);
-            intervalIDs.push(id);
-        }
-
+        // Input handling
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
+                startMusic();
                 if (isDead) {
                     resetGame();
                 } else {
@@ -327,49 +621,106 @@
             }
         });
 
-        gameContainer.addEventListener('click', jump);
-        gameContainer.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (isDead) {
-                resetGame();
-            } else {
-                jump();
-            }
+        gameContainer.addEventListener('click', (e) => {
+            // treat click as user interaction to allow music start
+            startMusic();
+            if (isDead) resetGame();
+            else jump();
         });
 
+        gameContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startMusic();
+            if (isDead) resetGame();
+            else jump();
+        }, { passive: false });
+
+        // initial environment intervals
         intervalIDs.push(setInterval(createMountain, 3500));
+        intervalIDs.push(setInterval(createChristmasTree, 8000));
         intervalIDs.push(setInterval(createSnowflake, 100));
         intervalIDs.push(setInterval(() => {
-            score++;
-            scoreElement.textContent = score;
-            if (score % 100 === 0 && gameSpeed < maxGameSpeed) {
-                gameSpeed += 1;
+            if (!isDead) {
+                score++;
+                scoreEl.textContent = score;
+                if (score % 100 === 0 && gameSpeed < maxGameSpeed) gameSpeed += 1;
             }
         }, 100));
-        setTimeout(generateObstacle, 1500);
+        setTimeout(generateObstacleRandomly, 1500);
 
+        // ---- Core update loop for player visuals + physics ----
         function updatePlayer() {
             if (!isDead) {
+                // apply gravity
                 velocity -= gravity;
                 playerBottom += velocity;
-                
+
+                // physics floor: slightly lower than css var to compensate PNG transparent bottom
                 const containerHeight = gameContainer.offsetHeight;
-                const groundHeight = document.getElementById('ground').offsetHeight;
-                const minBottom = (groundHeight / containerHeight * 100) + 0.5;
-                
+                const groundHeight = ground.offsetHeight;
+                // We subtract a small amount to lower the physics floor so visual feet meet the ground.
+                const minBottom = (groundHeight / containerHeight * 100) - 1.0; // tweak -1.0 if needed
+
+                // landing detection
                 if (playerBottom <= minBottom) {
                     playerBottom = minBottom;
                     isJumping = false;
                     velocity = 0;
                 }
-                
-                player.style.bottom = `${playerBottom}%`;
+
+                player.style.bottom = playerBottom + '%';
+
+                // rotation / tilt based on vertical velocity
+                const maxAngle = 30; // degrees maximum tilt
+                // velocity positive = moving up; invert to tilt nose upward on rising (negative deg)
+                const angle = Math.max(-maxAngle, Math.min(maxAngle, -velocity * 3));
+
+                // determine if visually on ground
+                const onGround = (!isJumping && Math.abs(velocity) < 0.01 && playerBottom <= minBottom + 0.02);
+
+                if (!onGround) {
+                    // in air: no running bob; apply transform directly
+                    player.classList.remove('running');
+                    trixieImg.style.animation = '';
+                    trixieImg.style.transition = 'transform 80ms linear';
+                    // translate upward when rising (negative -> move up), settle to 0 when falling
+                    let translateY = 0;
+                    if (velocity > 0) translateY = -6; // visually raise while rising
+                    else translateY = 2; // slightly down while falling
+                    trixieImg.style.transform = `translateY(${translateY}px) rotate(${angle}deg)`;
+                } else {
+                    // on ground: ensure the sprite visually sits on the floor and bob runs
+                    trixieImg.style.transition = '';
+                    trixieImg.style.transform = 'translateY(9px) rotate(0deg)'; // push down to align feet exactly
+                    if (!player.classList.contains('running')) player.classList.add('running');
+                }
+
+                // shadow scaling: shrinks when higher
+                const lift = Math.max(0, playerBottom - minBottom); // percent above floor
+                const scale = 1 - Math.min(0.65, (lift / 20)); // scale 1..0.35
+                playerShadow.style.transform = `translateX(-50%) scale(${scale})`;
+                playerShadow.style.opacity = `${Math.max(0.18, 0.3 * scale)}`;
             }
+
             const id = requestAnimationFrame(updatePlayer);
             animationIDs.push(id);
         }
 
+        // Start the player update loop
         updatePlayer();
+
+        // expose a tweak function for convenience (optional)
+        window.__gameTweaks = {
+            setPhysicsFloorOffset: (offsetPercent) => {
+                // offsetPercent = negative lowers the floor further (e.g. -1.2)
+                // This function is here so you can quickly call from console:
+                // __gameTweaks.setPhysicsFloorOffset(-1.5)
+                const containerHeight = gameContainer.offsetHeight;
+                const groundHeight = ground.offsetHeight;
+                // not directly applied here; change minBottom constant in code to persist
+                console.log('Tweak available in code; dynamic tweak not stored. Consider editing minBottom constant in JS for persistent change.');
+            }
+        };
     </script>
 </body>
-</html>  
+</html>
